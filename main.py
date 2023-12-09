@@ -11,7 +11,7 @@ hwnd = '331192'
 print(hwnd)
 
 wincap = WindowCapture(hwnd)
-
+##
 loop_time = time()
 
 while(True):
