@@ -1,0 +1,6 @@
+H_MIN = 35
+S_MIN = 107
+V_MIN = 0
+H_MAX = 179
+S_MAX = 255
+V_MAX = 198

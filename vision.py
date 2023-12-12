@@ -3,9 +3,10 @@ import numpy as np
 
 class Vision:
     def __init__(self, needle_img_path, method=cv.TM_CCOEFF_NORMED):
-        self.needle_img = cv.imread(needle_img_path, cv.IMREAD_UNCHANGED)
-        self.needle_w = self.needle_img.shape[1]
-        self.needle_h = self.needle_img.shape[0]
+        if needle_img_path:
+            self.needle_img = cv.imread(needle_img_path, cv.IMREAD_UNCHANGED)
+            self.needle_w = self.needle_img.shape[1]
+            self.needle_h = self.needle_img.shape[0]
         self.method = method
 
     def draw_game(self, haystack_img, roi=None):
@@ -19,6 +20,17 @@ class Vision:
             bottom_right = (x + w, y + h)
             cv.rectangle(haystack_img, top_left, bottom_right, color=line_color, 
                          lineType=line_type, thickness=2)
+        return haystack_img
+    
+    @staticmethod
+    def get_center(rectangles):
+        if rectangles:
+            x, y, w, h = rectangles[0]
+            radius =  min(h, w) // 2
+            center_x = x + int(h/2)
+            center_y = y + int(w/2)
+            return (center_x, center_y, radius)
+        return 
 
     @staticmethod
     def circular_mask(haystack_img, center, radius):
@@ -74,3 +86,27 @@ class Vision:
             cv.imshow('Matches', haystack_img)
         
         return points
+
+    def draw_rectangles(self, haystack_img, rectangles):
+        # these colors are actually BGR
+        line_color = (0, 255, 0)
+        line_type = cv.LINE_4
+
+        for (x, y, w, h) in rectangles:
+            # determine the box positions
+            top_left = (x, y)
+            bottom_right = (x + h, y + w)
+            # draw the box
+            cv.rectangle(haystack_img, top_left, bottom_right, line_color, lineType=line_type)
+
+        return haystack_img
+    
+    def draw_circle(self, haystack_img, circle, radius=None): # game circle
+        line_color = (0, 255, 0)
+        line_type = cv.LINE_4
+        center_x, center_y, r = circle
+        if not radius:
+            radius = r
+        cv.circle(haystack_img, (center_x, center_y+2), radius,
+                              color=line_color, lineType=line_type, shift=0)
+        return haystack_img
